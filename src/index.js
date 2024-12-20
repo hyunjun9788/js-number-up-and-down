@@ -59,6 +59,11 @@ async function playGame() {
         prevGuess.push(userInput)
         attempt++;
 
+        if (userInput > 50) {
+            console.log('50이하의 숫자를 입력해주세요.')
+            continue
+        }
+
         if (attempt > 5) {
             console.log(`5회 초과! 숫자를 맞추지 못했습니다. 정답: ${randomNumber}`)
             await askPlayAgain()
