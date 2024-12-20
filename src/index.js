@@ -47,7 +47,7 @@ async function askPlayAgain() {
 async function playGame() {
     console.log('컴퓨터가 1~50 사이의 숫자를 선택했습니다. 숫자를 맞춰보세요')
     const randomNumber = Math.floor(Math.random() * (50 - 1) + 1)
-    let count = 0
+    let attempt = 0
 
     console.log(randomNumber)
 
@@ -57,9 +57,9 @@ async function playGame() {
         console.log('숫자 입력: ')
         const userInput = await rl.question('')
         prevGuess.push(userInput)
-        count++;
+        attempt++;
 
-        if (count > 5) {
+        if (attempt > 5) {
             console.log(`5회 초과! 숫자를 맞추지 못했습니다. 정답: ${randomNumber}`)
             await askPlayAgain()
             break
@@ -67,7 +67,7 @@ async function playGame() {
 
         const result = progressGuess(randomNumber, userInput, prevGuess)
         if (result === 'correct') {
-            console.log(`축하합니다. ${count}번 만에 숫자를 맞추셨습니다.`)
+            console.log(`축하합니다. ${attempt}번 만에 숫자를 맞추셨습니다.`)
             askPlayAgain()
             break
         }
