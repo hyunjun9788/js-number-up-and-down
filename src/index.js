@@ -1,7 +1,7 @@
 
 
 import * as readline from 'node:readline/promises'
-import { arrayToString } from './utils/arrayUtils';
+import { arrayToString } from './utils/arrayUtils.js';
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -13,13 +13,13 @@ function progressGuess(randomNumber, guess, prevGuess) {
     if (randomNumber > Number(guess)) {
         console.log('업')
         console.log('이전 추측:', arrayToString(prevGuess))
-        return 'up'
+        return
     }
 
     if (randomNumber < Number(guess)) {
         console.log('다운')
         console.log('이전 추측:', arrayToString(prevGuess))
-        return 'down'
+        return
     }
 
     console.log('정답!')
