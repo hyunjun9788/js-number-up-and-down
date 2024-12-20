@@ -66,7 +66,7 @@ async function playGame() {
 
         if (attempt > 5) {
             console.log(`5회 초과! 숫자를 맞추지 못했습니다. 정답: ${randomNumber}`)
-            await askPlayAgain()
+            askPlayAgain()
             break
         }
 
