@@ -21,7 +21,7 @@ export function showUpAndDownStatus({ inputResult, prevResult }) {
 
         if (inputResult === 'down') {
             console.log('다운');
-            console.log('이전 추측:', prevResult.prevInput);
+            console.log('이전 추측:', prevInputResult);
             break
         }
 
