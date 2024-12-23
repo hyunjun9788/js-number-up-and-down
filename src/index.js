@@ -1,5 +1,4 @@
 import * as readline from 'node:readline/promises';
-import { arrayToString } from './utils/arrayUtils.js';
 import {
     MAX_COUNT,
     MAX_RANDOM_NUMBER,
@@ -14,31 +13,27 @@ const rl = readline.createInterface({
 rl.on('close', () => {
     process.exit();
 });
+
 function getRandomNumber(minNumber, maxNumber) {
     return Math.floor(Math.random() * maxNumber) + minNumber;
 }
 
-function getUpAndDownStatus({ randomNumber, userInput, prevGuess }) {
+function getUpAndDownStatus({ randomNumber, userInput }) {
     if (randomNumber > Number(userInput)) {
-        console.log('업');
-        console.log('이전 추측:', arrayToString(prevGuess));
-        return;
+        return 'up';
     }
 
     if (randomNumber < Number(userInput)) {
-        console.log('다운');
-        console.log('이전 추측:', arrayToString(prevGuess));
-        return;
+        return 'down'
     }
 
     if (isNaN(userInput)) {
-        console.log('1~50 사이의 숫자만 입력해주세요.');
-
-        return;
+        return 'error'
     }
 
     return 'correct';
 }
+
 
 async function askRestart() {
     while (true) {
@@ -58,15 +53,59 @@ async function askRestart() {
     }
 }
 
+function showUpAndDownStatus({ inputResult, count, prevInput }) {
+    const prevInputResult = prevInput.join(' ')
+    while (true) {
+        if (inputResult === 'up') {
+            console.log('업');
+            console.log('이전 추측:', prevInputResult);
+            break
+        }
+
+        if (inputResult === 'down') {
+            console.log('다운');
+            console.log('이전 추측:', prevInput);
+            break
+        }
+
+        if (inputResult === 'error') {
+            console.log('1~50 사이의 숫자만 입력해주세요.');
+            break
+        }
+
+        if (inputResult === 'correct') {
+            console.log('정답!');
+            console.log(`축하합니다. ${count}번 만에 숫자를 맞추셨습니다.`);
+            askRestart();
+            break;
+        }
+    }
+}
+
+function showErrorMessage({ type, randomNumber }) {
+    if (type === 'overMax') {
+        console.log('50이하의 숫자를 입력해주세요.');
+    }
+
+    if (type === 'underMin') {
+        console.log('1이상의 숫자를 입력해주세요.');
+    }
+
+    if (type === 'countOver') {
+        console.log(
+            `5회 초과! 숫자를 맞추지 못했습니다. 정답: ${randomNumber}`,
+        );
+    }
+}
 async function playGame() {
     console.log('컴퓨터가 1~50 사이의 숫자를 선택했습니다. 숫자를 맞춰보세요');
     const randomNumber = getRandomNumber(MIN_RANDOM_NUMBER, MAX_RANDOM_NUMBER);
 
-    let attempt = 0;
+    let count = 0;
 
     console.log(randomNumber);
 
-    const prevGuess = [];
+    const prevInput = [];
 
     while (true) {
         console.log('숫자 입력: ');
@@ -77,35 +116,39 @@ async function playGame() {
             Number(userInput) >= MIN_RANDOM_NUMBER &&
             Number(userInput) <= MAX_RANDOM_NUMBER
         ) {
-            prevGuess.push(userInput);
-            attempt += 1;
+            prevInput.push(userInput);
+            count += 1;
         }
 
         if (userInput > MAX_RANDOM_NUMBER) {
-            console.log('50이하의 숫자를 입력해주세요.');
+            showErrorMessage({ type: 'overMax' })
             continue;
         }
 
-        if (attempt >= MAX_COUNT) {
-            console.log(
-                `5회 초과! 숫자를 맞추지 못했습니다. 정답: ${randomNumber}`,
-            );
+        if (userInput < MIN_RANDOM_NUMBER) {
+            showErrorMessage({ type: 'underMin' })
+            continue;
+        }
+
+        if (count >= MAX_COUNT) {
+            showErrorMessage({ type: 'countOver', randomNumber })
             askRestart();
             break;
         }
 
-        const result = getUpAndDownStatus({
+        const inputResult = getUpAndDownStatus({
             randomNumber,
             userInput,
-            prevGuess,
+            prevInput,
         });
-        if (result === 'correct') {
-            console.log('정답!');
-            console.log(`축하합니다. ${attempt}번 만에 숫자를 맞추셨습니다.`);
-            askRestart();
-            break;
+
+        showUpAndDownStatus({ inputResult, count, prevInput })
+
+        if (inputResult === 'correct') {
+            break
         }
     }
 }
+
 
 playGame();
