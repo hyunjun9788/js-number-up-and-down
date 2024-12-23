@@ -36,6 +36,12 @@ async function playGame() {
             updatePrevInputAndCount({ prevResult, userInput })
         }
 
+        if (prevResult.count >= MAX_COUNT) {
+            showErrorMessage({ type: 'countOver', randomNumber })
+            askRestart();
+            break;
+        }
+
         if (userInput > MAX_RANDOM_NUMBER) {
             showErrorMessage({ type: 'overMax' })
             continue
@@ -46,13 +52,8 @@ async function playGame() {
             continue;
         }
 
-        if (prevResult.count >= MAX_COUNT) {
-            showErrorMessage({ type: 'countOver', randomNumber })
-            askRestart();
-            break;
-        }
-
         const inputResult = getUpAndDownStatus({
+            prevResult,
             randomNumber,
             userInput,
         });
