@@ -5,7 +5,7 @@ import {
   showRestartMessage,
   showUpAndDownStatus,
 } from '../views/game-view.js';
-import { MAX_COUNT, MAX_RANDOM_NUMBER, MIN_RANDOM_NUMBER } from '../constants.js';
+import { MAX_COUNT, MAX_RANDOM_NUMBER, MIN_RANDOM_NUMBER } from '../constants/game.js';
 import { showErrorMessage } from '../views/error-message.js';
 import {
   getRandomNumber,

@@ -1,4 +1,4 @@
-import { MAX_RANDOM_NUMBER, MIN_RANDOM_NUMBER } from '../constants.js';
+import { MAX_RANDOM_NUMBER, MIN_RANDOM_NUMBER } from '../constants/game.js';
 
 export function getRandomNumber(minNumber, maxNumber) {
   return Math.floor(Math.random() * maxNumber) + minNumber;
