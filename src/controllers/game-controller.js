@@ -41,10 +41,10 @@ async function playGame() {
   };
 
   while (true) {
-    const userInput = await showNumberInputMessage();
+    const userInputNumber = await showNumberInputMessage();
 
-    if (isValidUserInput({ userInput })) {
-      updatePrevInputAndCount({ prevResult, userInput });
+    if (isValidUserInput(userInputNumber)) {
+      updatePrevInputAndCount({ prevResult, userInputNumber });
     }
 
     if (prevResult.count >= MAX_COUNT) {
@@ -53,12 +53,12 @@ async function playGame() {
       break;
     }
 
-    if (userInput > MAX_RANDOM_NUMBER) {
+    if (userInputNumber > MAX_RANDOM_NUMBER) {
       showErrorMessage({ type: 'overMax' });
       continue;
     }
 
-    if (userInput < MIN_RANDOM_NUMBER) {
+    if (userInputNumber < MIN_RANDOM_NUMBER) {
       showErrorMessage({ type: 'underMin' });
       continue;
     }
@@ -66,7 +66,7 @@ async function playGame() {
     const inputResult = getUpAndDownStatus({
       prevResult,
       randomNumber,
-      userInput,
+      userInputNumber,
     });
 
     showUpAndDownStatus({ inputResult, prevResult });

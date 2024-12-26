@@ -4,27 +4,27 @@ export function getRandomNumber(minNumber, maxNumber) {
   return Math.floor(Math.random() * maxNumber) + minNumber;
 }
 
-export function getUpAndDownStatus({ randomNumber, userInput }) {
-  if (randomNumber > Number(userInput)) {
+export function getUpAndDownStatus({ randomNumber, userInputNumber }) {
+  if (randomNumber > Number(userInputNumber)) {
     return 'up';
   }
 
-  if (randomNumber < Number(userInput)) {
+  if (randomNumber < Number(userInputNumber)) {
     return 'down';
   }
 
-  if (isNaN(userInput)) {
+  if (isNaN(userInputNumber)) {
     return 'error';
   }
 
   return 'correct';
 }
 
-export function isValidUserInput({ userInput }) {
-  return !isNaN(userInput) && Number(userInput) >= MIN_RANDOM_NUMBER && Number(userInput) <= MAX_RANDOM_NUMBER;
+export function isValidUserInput(userInputNumber) {
+  return !isNaN(userInputNumber) && Number(userInputNumber) >= MIN_RANDOM_NUMBER && Number(userInputNumber) <= MAX_RANDOM_NUMBER;
 }
 
-export function updatePrevInputAndCount({ prevResult, userInput }) {
-  prevResult.prevInput.push(userInput);
+export function updatePrevInputAndCount({ prevResult, userInputNumber }) {
+  prevResult.prevInput.push(userInputNumber);
   prevResult.count += 1;
 }
