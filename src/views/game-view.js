@@ -10,8 +10,8 @@ export async function showNumberInputMessage() {
   return await rl.question('');
 }
 
-export function showUpAndDownStatus({ inputResult, prevResult }) {
-  const prevInputResult = prevResult.prevInput.join(' ');
+export function showUpAndDownStatus({ inputResult, prevInput }) {
+  const prevInputResult = prevInput.join(' ');
   while (true) {
     if (inputResult === 'up') {
       console.log('업');
@@ -32,7 +32,7 @@ export function showUpAndDownStatus({ inputResult, prevResult }) {
 
     if (inputResult === 'correct') {
       console.log('정답!');
-      console.log(`축하합니다. ${prevResult.count}번 만에 숫자를 맞추셨습니다.`);
+      console.log(`축하합니다. ${prevInput.length}번 만에 숫자를 맞추셨습니다.`);
       askRestart();
       break;
     }

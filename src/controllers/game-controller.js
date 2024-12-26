@@ -8,10 +8,11 @@ import {
 import { MAX_COUNT, MAX_RANDOM_NUMBER, MIN_RANDOM_NUMBER } from '../constants/game.js';
 import { showErrorMessage } from '../views/error-message.js';
 import {
+  getPrevInput,
   getRandomNumber,
   getUpAndDownStatus,
   isValidUserInput,
-  updatePrevInputAndCount,
+  updatePrevInput,
 } from '../models/game-model.js';
 
 export async function askRestart() {
@@ -35,19 +36,16 @@ async function playGame() {
 
   console.log(randomNumber);
 
-  const prevResult = {
-    prevInput: [],
-    count: 0,
-  };
+  const prevInput = getPrevInput()
 
   while (true) {
     const userInputNumber = await showNumberInputMessage();
 
     if (isValidUserInput(userInputNumber)) {
-      updatePrevInputAndCount({ prevResult, userInputNumber });
+      updatePrevInput({ userInputNumber });
     }
 
-    if (prevResult.count >= MAX_COUNT) {
+    if (prevInput.length >= MAX_COUNT) {
       showErrorMessage({ type: 'countOver', randomNumber });
       askRestart();
       break;
@@ -64,12 +62,11 @@ async function playGame() {
     }
 
     const inputResult = getUpAndDownStatus({
-      prevResult,
       randomNumber,
       userInputNumber,
     });
 
-    showUpAndDownStatus({ inputResult, prevResult });
+    showUpAndDownStatus({ inputResult, prevInput });
 
     if (inputResult === 'correct') {
       break;
