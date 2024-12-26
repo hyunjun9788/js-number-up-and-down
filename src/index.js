@@ -1,3 +1,3 @@
-import playGame from "./controllers/game-controller.js";
+import playGame from './controllers/game-controller.js';
 
 playGame();
