@@ -1,14 +1,18 @@
-import { MAX_RANDOM_NUMBER, MIN_RANDOM_NUMBER } from '../constants/game.js';
+import { INPUT_STATUS, MAX_RANDOM_NUMBER, MIN_RANDOM_NUMBER } from '../constants/game.js';
+import { isNumber } from '../utils/helpers.js';
 
-
-const prevInput = []
+let prevInput = [];
 
 export function getPrevInput() {
-  return prevInput
+  return prevInput;
 }
 
-export function updatePrevInput({ userInputNumber }) {
-  prevInput.push(userInputNumber)
+export function resetPrevInput() {
+  prevInput = [];
+}
+
+export function updatePrevInput(userInputNumber) {
+  prevInput.push(userInputNumber);
 }
 
 export function getRandomNumber(minNumber, maxNumber) {
@@ -17,20 +21,24 @@ export function getRandomNumber(minNumber, maxNumber) {
 
 export function getUpAndDownStatus({ randomNumber, userInputNumber }) {
   if (randomNumber > Number(userInputNumber)) {
-    return 'up';
+    return INPUT_STATUS.UP;
   }
 
   if (randomNumber < Number(userInputNumber)) {
-    return 'down';
+    return INPUT_STATUS.DOWN;
   }
 
-  if (isNaN(userInputNumber)) {
-    return 'error';
+  if (isNumber(userInputNumber)) {
+    return INPUT_STATUS.ERROR;
   }
 
-  return 'correct';
+  return INPUT_STATUS.CORRECT;
 }
 
 export function isValidUserInput(userInputNumber) {
-  return !isNaN(userInputNumber) && Number(userInputNumber) >= MIN_RANDOM_NUMBER && Number(userInputNumber) <= MAX_RANDOM_NUMBER;
+  return (
+    !isNaN(userInputNumber) &&
+    Number(userInputNumber) >= MIN_RANDOM_NUMBER &&
+    Number(userInputNumber) <= MAX_RANDOM_NUMBER
+  );
 }

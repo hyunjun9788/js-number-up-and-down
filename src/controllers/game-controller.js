@@ -1,17 +1,19 @@
 import {
+  inputNumber,
   showGameOverMessage,
   showGameStartMessage,
   showNumberInputMessage,
   showRestartMessage,
   showUpAndDownStatus,
 } from '../views/game-view.js';
-import { MAX_COUNT, MAX_RANDOM_NUMBER, MIN_RANDOM_NUMBER } from '../constants/game.js';
-import { showErrorMessage } from '../views/error-message.js';
+import { INPUT_STATUS, MAX_COUNT, MAX_RANDOM_NUMBER, MIN_RANDOM_NUMBER } from '../constants/game.js';
+import { showCountOverError, showOverMaxError, showUnderMinError } from '../views/error-message.js';
 import {
   getPrevInput,
   getRandomNumber,
   getUpAndDownStatus,
   isValidUserInput,
+  resetPrevInput,
   updatePrevInput,
 } from '../models/game-model.js';
 
@@ -24,6 +26,7 @@ export async function askRestart() {
       break;
     }
     if (playAgainInput === 'yes') {
+      resetPrevInput()
       playGame();
       break;
     }
@@ -36,39 +39,40 @@ async function playGame() {
 
   console.log(randomNumber);
 
-  const prevInput = getPrevInput()
+  const prevInput = getPrevInput();
 
   while (true) {
-    const userInputNumber = await showNumberInputMessage();
+    showNumberInputMessage()
+    const userInputNumber = await inputNumber();
 
     if (isValidUserInput(userInputNumber)) {
-      updatePrevInput({ userInputNumber });
+      updatePrevInput(userInputNumber);
     }
 
-    if (prevInput.length >= MAX_COUNT) {
-      showErrorMessage({ type: 'countOver', randomNumber });
+    if (prevInput.length >= MAX_COUNT && Number(userInputNumber) !== randomNumber) {
+      showCountOverError(randomNumber);
       askRestart();
       break;
     }
 
     if (userInputNumber > MAX_RANDOM_NUMBER) {
-      showErrorMessage({ type: 'overMax' });
+      showOverMaxError();
       continue;
     }
 
     if (userInputNumber < MIN_RANDOM_NUMBER) {
-      showErrorMessage({ type: 'underMin' });
+      showUnderMinError();
       continue;
     }
 
-    const inputResult = getUpAndDownStatus({
+    const inputStatusResult = getUpAndDownStatus({
       randomNumber,
       userInputNumber,
     });
 
-    showUpAndDownStatus({ inputResult, prevInput });
+    showUpAndDownStatus({ inputStatusResult, prevInput });
 
-    if (inputResult === 'correct') {
+    if (inputStatusResult === INPUT_STATUS.CORRECT) {
       break;
     }
   }
