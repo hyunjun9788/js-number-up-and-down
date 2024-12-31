@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>숫자 맞추기 게임</title>
+  <style>
+    body {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    input,
+    button {
+      margin: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    #prev-result {
+      font-size: 16px;
+    }
+
+    #input-container {
+      display: none;
+    }
+
+    #start-message {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="game-container">
+    <div id="start-message">컴퓨터가 1~50 사이의 숫자를 선택했습니다. 숫자를 맞춰보세요</div>
+    <button id="start-button">게임 시작</button>
+    <div id="input-container">
+      <form id="input-form">
+        숫자 입력: <input type="number" id="input-number" min="1" max="50" />
+        <button id="input-button" type="submit">입력</button>
+      </form>
+      <div id="up-or-down">
+      </div>
+      <div>
+        이전 추측: <span id="prev-result"></span>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="./index.js"></script>
+</body>
+
+</html>

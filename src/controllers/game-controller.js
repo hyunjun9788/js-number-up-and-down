@@ -1,81 +1,97 @@
 import {
-  inputNumber,
+  showCorrectMessage,
+  showFiveOverMessage,
   showGameOverMessage,
-  showGameStartMessage,
-  showNumberInputMessage,
-  showRestartMessage,
-  showUpAndDownStatus,
+  showGameReadyView,
+  showGameRestartMessage,
+  showGameStartView,
+  showInvalidYesNoInputMessage,
+  showUpOrDownStatusView,
+  updatePrevMyGuessNumbersView,
+  updateResetInputInnerValue,
+  updateResetPrevInputValuesView,
+  updateResetYesOrNoStatusView,
+  updateUpOrDownStatusView,
 } from '../views/game-view.js';
-import { INPUT_STATUS, MAX_COUNT, MAX_RANDOM_NUMBER, MIN_RANDOM_NUMBER } from '../constants/game.js';
-import { showCountOverError, showOverMaxError, showUnderMinError } from '../views/error-message.js';
+
 import {
-  getPrevInput,
-  getRandomNumber,
+  addCurrentMyGuessNumber,
+  generateRandomNumber,
+  getCurrentMyGuessNumber,
+  getPrevMyGuessNumberList,
   getUpAndDownStatus,
-  isValidUserInput,
-  resetPrevInput,
-  updatePrevInput,
+  resetPrevMyGuessNumberList,
 } from '../models/game-model.js';
 
-export async function askRestart() {
-  while (true) {
-    const playAgainInput = await showRestartMessage();
+import { MAX_COUNT, MAX_RANDOM_NUMBER, MIN_RANDOM_NUMBER, NUMBER_VALUE_STATUS } from '../constants/game.js';
 
-    if (playAgainInput === 'no') {
-      showGameOverMessage();
-      break;
-    }
-    if (playAgainInput === 'yes') {
-      resetPrevInput()
+let randomNumber
+let prevMyGuessNumberList = [];
+
+function resetPrevGameResults() {
+  resetPrevMyGuessNumberList()
+  updateResetPrevInputValuesView()
+  updateResetYesOrNoStatusView()
+  updateUpOrDownStatusView(NUMBER_VALUE_STATUS.NO_VALUE)
+}
+
+function restartGame() {
+  while (true) {
+    const restartResponse = showGameRestartMessage();
+
+    if (restartResponse === 'yes') {
       playGame();
       break;
     }
+
+    if (restartResponse === 'no') {
+      showGameOverMessage()
+      showGameReadyView();
+      break;
+    }
+    showInvalidYesNoInputMessage()
   }
+}
+
+function handleInputFormSubmit(e) {
+  e.preventDefault()
+
+  const currentInputValue = getCurrentMyGuessNumber();
+
+  addCurrentMyGuessNumber({ prevMyGuessNumberList, currentInputValue });
+
+  const upOrDownStatusResult = getUpAndDownStatus({
+    randomNumber,
+    currentInputValue,
+  });
+
+  showUpOrDownStatusView(upOrDownStatusResult)
+  updatePrevMyGuessNumbersView(prevMyGuessNumberList)
+
+  if (prevMyGuessNumberList.length >= MAX_COUNT && Number(currentInputValue) !== randomNumber) {
+    showFiveOverMessage(randomNumber)
+    restartGame()
+  }
+
+  if (upOrDownStatusResult === NUMBER_VALUE_STATUS.CORRECT) {
+    showCorrectMessage(prevMyGuessNumberList.length)
+    restartGame()
+  }
+
+  updateResetInputInnerValue();
 }
 
 async function playGame() {
-  showGameStartMessage();
-  const randomNumber = getRandomNumber(MIN_RANDOM_NUMBER, MAX_RANDOM_NUMBER);
+  randomNumber = generateRandomNumber(MIN_RANDOM_NUMBER, MAX_RANDOM_NUMBER);
+  prevMyGuessNumberList = getPrevMyGuessNumberList();
+  showGameStartView();
+  resetPrevGameResults()
 
-  console.log(randomNumber);
+  const numberInputForm = document.getElementById('input-form');
 
-  const prevInput = getPrevInput();
-
-  while (true) {
-    showNumberInputMessage()
-    const userInputNumber = await inputNumber();
-
-    if (isValidUserInput(userInputNumber)) {
-      updatePrevInput(userInputNumber);
-    }
-
-    if (prevInput.length >= MAX_COUNT && Number(userInputNumber) !== randomNumber) {
-      showCountOverError(randomNumber);
-      askRestart();
-      break;
-    }
-
-    if (userInputNumber > MAX_RANDOM_NUMBER) {
-      showOverMaxError();
-      continue;
-    }
-
-    if (userInputNumber < MIN_RANDOM_NUMBER) {
-      showUnderMinError();
-      continue;
-    }
-
-    const inputStatusResult = getUpAndDownStatus({
-      randomNumber,
-      userInputNumber,
-    });
-
-    showUpAndDownStatus({ inputStatusResult, prevInput });
-
-    if (inputStatusResult === INPUT_STATUS.CORRECT) {
-      break;
-    }
-  }
+  numberInputForm.removeEventListener('submit', handleInputFormSubmit);
+  numberInputForm.addEventListener('submit', handleInputFormSubmit);
 }
+
 
 export default playGame;

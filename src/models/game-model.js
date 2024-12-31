@@ -1,44 +1,36 @@
-import { INPUT_STATUS, MAX_RANDOM_NUMBER, MIN_RANDOM_NUMBER } from '../constants/game.js';
-import { isNumber } from '../utils/helpers.js';
+import { NUMBER_VALUE_STATUS } from '../constants/game.js';
 
-let prevInput = [];
+const prevMyGuessNumberList = [];
 
-export function getPrevInput() {
-  return prevInput;
-}
-
-export function resetPrevInput() {
-  prevInput = [];
-}
-
-export function updatePrevInput(userInputNumber) {
-  prevInput.push(userInputNumber);
-}
-
-export function getRandomNumber(minNumber, maxNumber) {
+export function generateRandomNumber(minNumber, maxNumber) {
   return Math.floor(Math.random() * maxNumber) + minNumber;
 }
 
-export function getUpAndDownStatus({ randomNumber, userInputNumber }) {
-  if (randomNumber > Number(userInputNumber)) {
-    return INPUT_STATUS.UP;
-  }
-
-  if (randomNumber < Number(userInputNumber)) {
-    return INPUT_STATUS.DOWN;
-  }
-
-  if (isNumber(userInputNumber)) {
-    return INPUT_STATUS.ERROR;
-  }
-
-  return INPUT_STATUS.CORRECT;
+export function getPrevMyGuessNumberList() {
+  return prevMyGuessNumberList;
 }
 
-export function isValidUserInput(userInputNumber) {
-  return (
-    !isNaN(userInputNumber) &&
-    Number(userInputNumber) >= MIN_RANDOM_NUMBER &&
-    Number(userInputNumber) <= MAX_RANDOM_NUMBER
-  );
+export function resetPrevMyGuessNumberList() {
+  prevMyGuessNumberList.length = 0;
+}
+
+export function addCurrentMyGuessNumber({ prevMyGuessNumberList, currentInputValue }) {
+  prevMyGuessNumberList.push(currentInputValue);
+}
+
+export function getCurrentMyGuessNumber() {
+  const currentInputNumber = document.getElementById('input-number').value
+  return Number(currentInputNumber)
+}
+
+export function getUpAndDownStatus({ randomNumber, currentInputValue }) {
+  if (randomNumber > Number(currentInputValue)) {
+    return NUMBER_VALUE_STATUS.UP;
+  }
+
+  if (randomNumber < Number(currentInputValue)) {
+    return NUMBER_VALUE_STATUS.DOWN;
+  }
+
+  return NUMBER_VALUE_STATUS.CORRECT;
 }
