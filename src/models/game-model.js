@@ -2,33 +2,33 @@ import { NUMBER_VALUE_STATUS } from '../constants/game.js';
 
 const prevMyGuessNumberList = [];
 
-export function generateRandomNumber(minNumber, maxNumber) {
-  return Math.floor(Math.random() * maxNumber) + minNumber;
+export function generateRandomNumber(min, max) {
+  return Math.floor(Math.random() * max) + min;
 }
 
 export function getPrevMyGuessNumberList() {
   return prevMyGuessNumberList;
 }
 
-export function resetPrevMyGuessNumberList() {
+export function clearPrevMyGuessNumberList() {
   prevMyGuessNumberList.length = 0;
 }
 
-export function addCurrentMyGuessNumber({ prevMyGuessNumberList, currentInputValue }) {
-  prevMyGuessNumberList.push(currentInputValue);
+export function addCurrentMyGuessNumber(guessNumber) {
+  prevMyGuessNumberList.push(guessNumber);
 }
 
 export function getCurrentMyGuessNumber() {
-  const currentInputNumber = document.getElementById('input-number').value
-  return Number(currentInputNumber)
+  const guessNumber = document.getElementById('input-number').valueAsNumber;
+  return guessNumber;
 }
 
-export function getUpAndDownStatus({ randomNumber, currentInputValue }) {
-  if (randomNumber > Number(currentInputValue)) {
+export function getUpOrDownStatus({ randomNumber, guessNumber }) {
+  if (randomNumber > guessNumber) {
     return NUMBER_VALUE_STATUS.UP;
   }
 
-  if (randomNumber < Number(currentInputValue)) {
+  if (randomNumber < guessNumber) {
     return NUMBER_VALUE_STATUS.DOWN;
   }
 

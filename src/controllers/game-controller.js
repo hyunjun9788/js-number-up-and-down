@@ -1,38 +1,38 @@
 import {
+  alertInvalidYesNoInputMessage,
+  resetPrevInputValuesView,
+  resetUpOrDownStatusView,
   showCorrectMessage,
-  showFiveOverMessage,
   showGameOverMessage,
   showGameReadyView,
   showGameRestartMessage,
   showGameStartView,
-  showInvalidYesNoInputMessage,
+  showMaxNumberOverMessage,
   showUpOrDownStatusView,
   updatePrevMyGuessNumbersView,
   updateResetInputInnerValue,
-  updateResetPrevInputValuesView,
-  updateResetYesOrNoStatusView,
   updateUpOrDownStatusView,
 } from '../views/game-view.js';
 
 import {
   addCurrentMyGuessNumber,
+  clearPrevMyGuessNumberList,
   generateRandomNumber,
   getCurrentMyGuessNumber,
   getPrevMyGuessNumberList,
-  getUpAndDownStatus,
-  resetPrevMyGuessNumberList,
+  getUpOrDownStatus,
 } from '../models/game-model.js';
 
 import { MAX_COUNT, MAX_RANDOM_NUMBER, MIN_RANDOM_NUMBER, NUMBER_VALUE_STATUS } from '../constants/game.js';
 
-let randomNumber
-let prevMyGuessNumberList = [];
+let randomNumber;
+// let prevMyGuessNumberList;
 
 function resetPrevGameResults() {
-  resetPrevMyGuessNumberList()
-  updateResetPrevInputValuesView()
-  updateResetYesOrNoStatusView()
-  updateUpOrDownStatusView(NUMBER_VALUE_STATUS.NO_VALUE)
+  clearPrevMyGuessNumberList();
+  resetPrevInputValuesView();
+  resetUpOrDownStatusView();
+  updateUpOrDownStatusView(NUMBER_VALUE_STATUS.EMPTY_VALUE);
 }
 
 function restartGame() {
@@ -40,58 +40,63 @@ function restartGame() {
     const restartResponse = showGameRestartMessage();
 
     if (restartResponse === 'yes') {
+      resetPrevGameResults();
       playGame();
       break;
     }
 
     if (restartResponse === 'no') {
-      showGameOverMessage()
+      resetPrevGameResults();
+      showGameOverMessage();
       showGameReadyView();
       break;
     }
-    showInvalidYesNoInputMessage()
+    alertInvalidYesNoInputMessage();
   }
 }
 
 function handleInputFormSubmit(e) {
-  e.preventDefault()
+  e.preventDefault();
 
-  const currentInputValue = getCurrentMyGuessNumber();
+  const guessNumber = getCurrentMyGuessNumber();
+  const prevMyGuessNumberList = getPrevMyGuessNumberList();
 
-  addCurrentMyGuessNumber({ prevMyGuessNumberList, currentInputValue });
+  addCurrentMyGuessNumber(guessNumber);
 
-  const upOrDownStatusResult = getUpAndDownStatus({
+  const upOrDownStatusResult = getUpOrDownStatus({
     randomNumber,
-    currentInputValue,
+    guessNumber,
   });
 
-  showUpOrDownStatusView(upOrDownStatusResult)
-  updatePrevMyGuessNumbersView(prevMyGuessNumberList)
+  showUpOrDownStatusView(upOrDownStatusResult);
 
-  if (prevMyGuessNumberList.length >= MAX_COUNT && Number(currentInputValue) !== randomNumber) {
-    showFiveOverMessage(randomNumber)
-    restartGame()
+  const prevMyGuessNumbers = prevMyGuessNumberList.join(' ');
+  updatePrevMyGuessNumbersView(prevMyGuessNumbers);
+
+  if (prevMyGuessNumberList.length >= MAX_COUNT && Number(guessNumber) !== randomNumber) {
+    showMaxNumberOverMessage(randomNumber);
+    restartGame();
   }
 
   if (upOrDownStatusResult === NUMBER_VALUE_STATUS.CORRECT) {
-    showCorrectMessage(prevMyGuessNumberList.length)
-    restartGame()
+    showCorrectMessage(prevMyGuessNumberList.length);
+    restartGame();
   }
 
   updateResetInputInnerValue();
 }
 
-async function playGame() {
-  randomNumber = generateRandomNumber(MIN_RANDOM_NUMBER, MAX_RANDOM_NUMBER);
-  prevMyGuessNumberList = getPrevMyGuessNumberList();
-  showGameStartView();
-  resetPrevGameResults()
-
+function updateFormSubmitListenerForPlay() {
   const numberInputForm = document.getElementById('input-form');
-
   numberInputForm.removeEventListener('submit', handleInputFormSubmit);
   numberInputForm.addEventListener('submit', handleInputFormSubmit);
 }
 
+async function playGame() {
+  randomNumber = generateRandomNumber(MIN_RANDOM_NUMBER, MAX_RANDOM_NUMBER);
+  showGameStartView();
+
+  updateFormSubmitListenerForPlay();
+}
 
 export default playGame;
