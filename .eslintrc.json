@@ -1,12 +1,20 @@
 {
-  "rules": {},
-  "env": {
-    "es6": true,
-    "node": true
-  },
-  "parserOptions": {
-    "ecmaVersion": "latest",
-    "sourceType": "module"
-  },
-  "extends": ["eslint:recommended", "plugin:prettier/recommended"]
+    "rules": {
+        "prettier/prettier": [
+            "error",
+            {
+                "endOfLine": "auto"
+            }
+        ],
+        "no-constant-condition": ["error", { "checkLoops": false }]
+    },
+    "env": {
+        "es6": true,
+        "node": true
+    },
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "extends": ["eslint:recommended", "plugin:prettier/recommended"]
 }
