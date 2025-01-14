@@ -1,81 +1,102 @@
 import {
-  inputNumber,
+  alertInvalidYesNoInputMessage,
+  resetPrevInputValuesView,
+  resetUpOrDownStatusView,
+  showCorrectMessage,
   showGameOverMessage,
-  showGameStartMessage,
-  showNumberInputMessage,
-  showRestartMessage,
-  showUpAndDownStatus,
+  showGameReadyView,
+  showGameRestartMessage,
+  showGameStartView,
+  showMaxNumberOverMessage,
+  showUpOrDownStatusView,
+  updatePrevMyGuessNumbersView,
+  updateResetInputInnerValue,
+  updateUpOrDownStatusView,
 } from '../views/game-view.js';
-import { INPUT_STATUS, MAX_COUNT, MAX_RANDOM_NUMBER, MIN_RANDOM_NUMBER } from '../constants/game.js';
-import { showCountOverError, showOverMaxError, showUnderMinError } from '../views/error-message.js';
+
 import {
-  getPrevInput,
-  getRandomNumber,
-  getUpAndDownStatus,
-  isValidUserInput,
-  resetPrevInput,
-  updatePrevInput,
+  addCurrentMyGuessNumber,
+  clearPrevMyGuessNumberList,
+  generateRandomNumber,
+  getCurrentMyGuessNumber,
+  getPrevMyGuessNumberList,
+  getUpOrDownStatus,
 } from '../models/game-model.js';
 
-export async function askRestart() {
-  while (true) {
-    const playAgainInput = await showRestartMessage();
+import { MAX_COUNT, MAX_RANDOM_NUMBER, MIN_RANDOM_NUMBER, NUMBER_VALUE_STATUS } from '../constants/game.js';
 
-    if (playAgainInput === 'no') {
-      showGameOverMessage();
-      break;
-    }
-    if (playAgainInput === 'yes') {
-      resetPrevInput()
+let randomNumber;
+// let prevMyGuessNumberList;
+
+function resetPrevGameResults() {
+  clearPrevMyGuessNumberList();
+  resetPrevInputValuesView();
+  resetUpOrDownStatusView();
+  updateUpOrDownStatusView(NUMBER_VALUE_STATUS.EMPTY_VALUE);
+}
+
+function restartGame() {
+  while (true) {
+    const restartResponse = showGameRestartMessage();
+
+    if (restartResponse === 'yes') {
+      resetPrevGameResults();
       playGame();
       break;
     }
+
+    if (restartResponse === 'no') {
+      resetPrevGameResults();
+      showGameOverMessage();
+      showGameReadyView();
+      break;
+    }
+    alertInvalidYesNoInputMessage();
   }
 }
 
-async function playGame() {
-  showGameStartMessage();
-  const randomNumber = getRandomNumber(MIN_RANDOM_NUMBER, MAX_RANDOM_NUMBER);
+function handleInputFormSubmit(e) {
+  e.preventDefault();
 
-  console.log(randomNumber);
+  const guessNumber = getCurrentMyGuessNumber();
+  const prevMyGuessNumberList = getPrevMyGuessNumberList();
 
-  const prevInput = getPrevInput();
+  addCurrentMyGuessNumber(guessNumber);
 
-  while (true) {
-    showNumberInputMessage()
-    const userInputNumber = await inputNumber();
+  const upOrDownStatusResult = getUpOrDownStatus({
+    randomNumber,
+    guessNumber,
+  });
 
-    if (isValidUserInput(userInputNumber)) {
-      updatePrevInput(userInputNumber);
-    }
+  showUpOrDownStatusView(upOrDownStatusResult);
 
-    if (prevInput.length >= MAX_COUNT && Number(userInputNumber) !== randomNumber) {
-      showCountOverError(randomNumber);
-      askRestart();
-      break;
-    }
+  const prevMyGuessNumbers = prevMyGuessNumberList.join(' ');
+  updatePrevMyGuessNumbersView(prevMyGuessNumbers);
 
-    if (userInputNumber > MAX_RANDOM_NUMBER) {
-      showOverMaxError();
-      continue;
-    }
-
-    if (userInputNumber < MIN_RANDOM_NUMBER) {
-      showUnderMinError();
-      continue;
-    }
-
-    const inputStatusResult = getUpAndDownStatus({
-      randomNumber,
-      userInputNumber,
-    });
-
-    showUpAndDownStatus({ inputStatusResult, prevInput });
-
-    if (inputStatusResult === INPUT_STATUS.CORRECT) {
-      break;
-    }
+  if (prevMyGuessNumberList.length >= MAX_COUNT && Number(guessNumber) !== randomNumber) {
+    showMaxNumberOverMessage(randomNumber);
+    restartGame();
   }
+
+  if (upOrDownStatusResult === NUMBER_VALUE_STATUS.CORRECT) {
+    showCorrectMessage(prevMyGuessNumberList.length);
+    restartGame();
+  }
+
+  updateResetInputInnerValue();
+}
+
+function updateFormSubmitListenerForPlay() {
+  const numberInputForm = document.getElementById('input-form');
+  numberInputForm.removeEventListener('submit', handleInputFormSubmit);
+  numberInputForm.addEventListener('submit', handleInputFormSubmit);
+}
+
+async function playGame() {
+  randomNumber = generateRandomNumber(MIN_RANDOM_NUMBER, MAX_RANDOM_NUMBER);
+  showGameStartView();
+
+  updateFormSubmitListenerForPlay();
 }
 
 export default playGame;

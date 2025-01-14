@@ -1,44 +1,36 @@
-import { INPUT_STATUS, MAX_RANDOM_NUMBER, MIN_RANDOM_NUMBER } from '../constants/game.js';
-import { isNumber } from '../utils/helpers.js';
+import { NUMBER_VALUE_STATUS } from '../constants/game.js';
 
-let prevInput = [];
+const prevMyGuessNumberList = [];
 
-export function getPrevInput() {
-  return prevInput;
+export function generateRandomNumber(min, max) {
+  return Math.floor(Math.random() * max) + min;
 }
 
-export function resetPrevInput() {
-  prevInput = [];
+export function getPrevMyGuessNumberList() {
+  return prevMyGuessNumberList;
 }
 
-export function updatePrevInput(userInputNumber) {
-  prevInput.push(userInputNumber);
+export function clearPrevMyGuessNumberList() {
+  prevMyGuessNumberList.length = 0;
 }
 
-export function getRandomNumber(minNumber, maxNumber) {
-  return Math.floor(Math.random() * maxNumber) + minNumber;
+export function addCurrentMyGuessNumber(guessNumber) {
+  prevMyGuessNumberList.push(guessNumber);
 }
 
-export function getUpAndDownStatus({ randomNumber, userInputNumber }) {
-  if (randomNumber > Number(userInputNumber)) {
-    return INPUT_STATUS.UP;
+export function getCurrentMyGuessNumber() {
+  const guessNumber = document.getElementById('input-number').valueAsNumber;
+  return guessNumber;
+}
+
+export function getUpOrDownStatus({ randomNumber, guessNumber }) {
+  if (randomNumber > guessNumber) {
+    return NUMBER_VALUE_STATUS.UP;
   }
 
-  if (randomNumber < Number(userInputNumber)) {
-    return INPUT_STATUS.DOWN;
+  if (randomNumber < guessNumber) {
+    return NUMBER_VALUE_STATUS.DOWN;
   }
 
-  if (isNumber(userInputNumber)) {
-    return INPUT_STATUS.ERROR;
-  }
-
-  return INPUT_STATUS.CORRECT;
-}
-
-export function isValidUserInput(userInputNumber) {
-  return (
-    !isNaN(userInputNumber) &&
-    Number(userInputNumber) >= MIN_RANDOM_NUMBER &&
-    Number(userInputNumber) <= MAX_RANDOM_NUMBER
-  );
+  return NUMBER_VALUE_STATUS.CORRECT;
 }
